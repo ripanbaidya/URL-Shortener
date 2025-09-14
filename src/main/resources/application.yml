@@ -1,0 +1,29 @@
+# port configuration
+server:
+  port: 8000
+
+  # servlet path configuration
+  servlet:
+    context-path: /api/v1
+
+spring:
+  # application name
+  application:
+    name: Url-Shortner
+
+  # database configuration
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  # jpa configuration
+  jpa:
+#    hibernate:
+#      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+    database: postgresql
