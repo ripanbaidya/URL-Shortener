@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
@@ -9,42 +10,108 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/styles.css}"/>
 </head>
-<body>
-<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/}">URL Shortener</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+<body class="bg-light text-dark">
+
+<!-- Top Navigation -->
+<header class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <i class="bi bi-link-45deg me-2"></i> URL Shortener
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+                aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <!-- Left menu -->
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">My URLs</a>
+                    <a class="nav-link fw-semibold" href="#" sec:authorize="isAuthenticated()">My URLs</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Admin Dashboard</a>
+                    <a class="nav-link fw-semibold" href="#" sec:authorize="hasRole('ADMIN')">Admin Dashboard</a>
                 </li>
             </ul>
-            <ul class="navbar-nav">
+
+            <!-- Right menu -->
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Login</a>
+                    <a class="nav-link fw-semibold" href="#" sec:authorize="isAnonymous()">Login</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Register</a>
+                <li class="nav-item ms-2">
+                    <a class="btn btn-light fw-semibold px-3" href="#" sec:authorize="isAnonymous()">Register</a>
+                </li>
+                <li class="nav-item" sec:authrorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-outline-light fw-semibold px-3">Logout</button>
+                    </form>
                 </li>
             </ul>
         </div>
     </div>
-</nav>
+</header>
 
-<div class="container">
+<!-- Main Layout -->
+<main class="container-fluid">
+    <div class="row flex-nowrap">
+        <!-- Sidebar -->
+        <aside class="col-12 col-md-3 col-xl-2 px-sm-2 px-0 bg-white border-end shadow-sm min-vh-100 d-none d-md-block">
+            <div class="d-flex flex-column align-items-stretch pt-3 min-vh-100">
+                <ul class="nav nav-pills flex-column mb-auto px-3">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link link-dark">
+                            <i class="bi bi-house-door me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link link-dark">
+                            <i class="bi bi-collection me-2"></i> My URLs
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link link-dark">
+                            <i class="bi bi-gear me-2"></i> Admin Panel
+                        </a>
+                    </li>
+                </ul>
+                <hr class="mt-auto mb-3"/>
+                <div class="px-3 pb-3 small text-muted">
+                    &copy; 2025 URL Shortener
+                </div>
+            </div>
+        </aside>
 
-    <div layout:fragment="content">
-        <!-- Your Page Content Here -->
+        <!-- Page Content -->
+        <section class="col py-4 px-4">
+
+            <!-- Alerts -->
+            <div th:if="${successMessage}"
+                 class="alert alert-success alert-dismissible fade show shadow-sm"
+                 role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div th:if="${errorMessage}"
+                 class="alert alert-danger alert-dismissible fade show shadow-sm"
+                 role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Dynamic Content -->
+            <div layout:fragment="content" class="mt-4">
+                <!-- Page content will be injected here -->
+            </div>
+        </section>
     </div>
-
-</div>
+</main>
 
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 </body>

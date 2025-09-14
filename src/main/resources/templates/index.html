@@ -7,19 +7,144 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+
+    <!-- Completely New Styles -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #fce4ec);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            color: #333;
+        }
+
+        .jumbotron {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            font-weight: 500;
+            color: #222;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border-radius: 16px;
+            border: none;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background: #ff6f61;
+            border: none;
+            border-radius: 50px;
+            padding: 0.6rem 1.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #e85c50;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+        }
+
+        table {
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: #ff6f61;
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 111, 97, 0.1);
+        }
+
+        .alert-info {
+            border: none;
+            border-radius: 14px;
+            background: rgba(0, 123, 255, 0.1);
+            color: #004085;
+            font-weight: 500;
+            padding: 1rem 1.2rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        input.form-control {
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            padding: 0.55rem 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        input.form-control:focus {
+            border-color: #ff6f61;
+            box-shadow: 0 0 0 0.2rem rgba(255,111,97,0.25);
+        }
+    </style>
 </head>
 <body>
-<div layout:fragment="content">
-    <div class="jumbotron bg-light p-5 rounded-3 my-4">
-        <p class="lead">A simple URL shortener service. Create short, easy-to-share links.</p>
+<div layout:fragment="content" class="container py-4">
+
+    <!-- Hero -->
+    <div class="jumbotron mb-5">
+        <h1 class="display-6 fw-bold">Welcome to Your URL Shortener 🚀</h1>
+        <p class="lead mt-2">Shrink long links into simple, shareable short URLs.</p>
     </div>
 
-    <h2 class="mt-5">Public Shortened URLs</h2>
+    <!-- Short URL Form -->
+    <div class="card mb-5">
+        <div class="card-header">
+            Create a Short URL
+        </div>
+        <div class="card-body">
+            <form th:action="@{/short-urls}" method="post"
+                  th:object="${createShortUrlForm}">
+                <div class="mb-3">
+                    <label for="originalUrl" class="form-label">Original URL</label>
+                    <input type="text" class="form-control" id="originalUrl"
+                           th:field="*{originalUrl}"
+                           placeholder="https://example.com/my-long-url">
+                    <div class="text-danger mt-1 small"
+                         th:if="${#fields.hasErrors('originalUrl')}"
+                         th:errors="*{originalUrl}"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Shorten URL</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Public URLs -->
+    <h2 class="fw-bold mb-3">Public Shortened URLs</h2>
     <div th:if="${shortUrls.isEmpty()}" class="alert alert-info">
         No public URLs have been created yet.
     </div>
     <div th:unless="${shortUrls.isEmpty()}" class="table-responsive">
-        <table class="table table-striped table-hover">
+        <table class="table align-middle">
             <thead>
             <tr>
                 <th>Short URL</th>
@@ -32,12 +157,18 @@
             <tbody>
             <tr th:each="url : ${shortUrls}">
                 <td>
-                    <a th:href="@{/s/{key}(key=${url.shortKey})}" th:text="${baseUrl + '/s/' + url.shortKey}" target="_blank"></a>
+                    <a th:href="@{/s/{key}(key=${url.shortKey})}"
+                       th:text="${baseUrl + '/s/' + url.shortKey}"
+                       target="_blank" class="fw-semibold text-decoration-none text-dark"></a>
                 </td>
                 <td>
-                    <a th:href="${url.originalUrl}" th:text="${#strings.abbreviate(url.originalUrl, 50)}" target="_blank"></a>
+                    <a th:href="${url.originalUrl}"
+                       th:text="${#strings.abbreviate(url.originalUrl, 50)}"
+                       target="_blank"
+                       class="text-decoration-none text-muted"></a>
                 </td>
-                <td th:text="${url.createdBy != null ? url.createdBy.name : 'Guest'}"></td>
+                <td th:text="${url.createdBy != null ? url.createdBy.name : 'Guest'}"
+                    class="fw-medium"></td>
                 <td th:text="${#temporals.format(url.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
                 <td th:text="${url.expiresAt != null ? #temporals.format(url.expiresAt, 'yyyy-MM-dd HH:mm') : 'Never'}"></td>
             </tr>

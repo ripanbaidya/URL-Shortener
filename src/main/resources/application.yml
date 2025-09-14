@@ -23,7 +23,19 @@ spring:
 #    hibernate:
 #      ddl-auto: create
     show-sql: true
+    # default value is true, make sure in production make it false or else it will create performance issue.
+    open-in-view: false
     properties:
       hibernate:
         format_sql: false
     database: postgresql
+#  security:
+#    user:
+#      name: rb
+#      password: rb
+#      roles:
+#        - ADMIN
+app:
+  baseUrl: http://localhost:8000
+  defaultExpiryInDays: 30
+  validateOriginalUrl: true
