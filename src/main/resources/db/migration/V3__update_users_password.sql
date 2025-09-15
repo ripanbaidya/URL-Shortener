@@ -1,0 +1,2 @@
+UPDATE users SET password = '$2a$10$3mJxHzNXHBaZB4sXdUcTmOKuCBS3MIfzNhdRckJz81I.bm9rKoyRa' WHERE email = 'admin@gmail.com';
+UPDATE users SET password = '$2a$10$RdyiOr7dxNHBMPuCBC.GQeJ5dYvVNGwd0pOozaLi39gup3yCHKd3K' WHERE email = 'siva@gmail.com';

@@ -1,150 +1,242 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-
-    <!-- Completely New Styles -->
+    <title>Linkify | Modern URL Shortener</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #3b82f6;
+            --text-dark: #111827;
+            --text-medium: #374151;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
+            --border-color: #e5e7eb;
+            --card-shadow: 0 4px 18px rgba(0,0,0,0.05);
+            --card-shadow-hover: 0 8px 25px rgba(0,0,0,0.08);
+            --border-radius-lg: 1rem;
+            --border-radius-md: 0.6rem;
+        }
+
         body {
-            background: linear-gradient(135deg, #e0f7fa, #fce4ec);
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            color: #333;
+            background-color: var(--bg-light);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text-dark);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .jumbotron {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 3rem;
-            text-align: center;
-            font-weight: 500;
-            color: #222;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        h2 {
+            font-weight: 700;
+            color: var(--text-dark);
         }
 
-        .card {
-            border-radius: 16px;
-            border: none;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-        }
-
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid #eee;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .btn-primary {
-            background: #ff6f61;
-            border: none;
-            border-radius: 50px;
-            padding: 0.6rem 1.6rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background: #e85c50;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-        }
-
-        table {
-            border-radius: 14px;
-            overflow: hidden;
-        }
-
-        thead {
-            background: #ff6f61;
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
+            padding: 5rem 2rem;
+            border-radius: var(--border-radius-lg);
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
         }
 
-        tbody tr {
-            transition: background 0.2s ease;
+        /* Card & Form Styles */
+        .card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #ffffff;
         }
-
-        tbody tr:hover {
-            background-color: rgba(255, 111, 97, 0.1);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
         }
-
-        .alert-info {
-            border: none;
-            border-radius: 14px;
-            background: rgba(0, 123, 255, 0.1);
-            color: #004085;
-            font-weight: 500;
-            padding: 1rem 1.2rem;
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            padding: 1.25rem 1.5rem;
         }
-
+        .card-body {
+            padding: 1.5rem;
+        }
         .form-label {
+            font-weight: 600;
+            color: var(--text-medium);
+            margin-bottom: 0.5rem;
+        }
+        .form-control {
+            border-radius: var(--border-radius-md);
+            border: 1px solid #d1d5db;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            outline: none;
+        }
+        .form-check-input:focus {
+             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: var(--border-radius-md);
+            padding: 0.8rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(99, 102, 241, 0.35);
+        }
+
+        /* Table Styles */
+        .table-responsive {
+            box-shadow: var(--card-shadow);
+            border-radius: var(--border-radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            background: #fff;
+        }
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        thead th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th, td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            vertical-align: middle;
+        }
+        tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        tbody tr:not(:last-child) {
+            border-bottom: 1px solid var(--border-color);
+        }
+        tbody tr:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* Alert Styles */
+        .alert-info {
+            border-radius: var(--border-radius-lg);
+            background-color: #eef2ff;
+            color: #3730a3;
             font-weight: 500;
-        }
-
-        input.form-control {
-            border-radius: 10px;
-            border: 1px solid #ddd;
-            padding: 0.55rem 0.9rem;
-            transition: all 0.2s ease;
-        }
-
-        input.form-control:focus {
-            border-color: #ff6f61;
-            box-shadow: 0 0 0 0.2rem rgba(255,111,97,0.25);
+            border: 1px solid #c7d2fe;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
     </style>
 </head>
 <body>
-<div layout:fragment="content" class="container py-4">
+<div layout:fragment="content" class="container my-5">
 
-    <!-- Hero -->
-    <div class="jumbotron mb-5">
-        <h1 class="display-6 fw-bold">Welcome to Your URL Shortener 🚀</h1>
-        <p class="lead mt-2">Shrink long links into simple, shareable short URLs.</p>
+    <div class="hero">
+        <h1>Linkify</h1>
+        <p>Shorten, manage & share links beautifully in seconds 🚀</p>
     </div>
 
-    <!-- Short URL Form -->
     <div class="card mb-5">
         <div class="card-header">
-            Create a Short URL
+            Create a New Link
         </div>
         <div class="card-body">
-            <form th:action="@{/short-urls}" method="post"
-                  th:object="${createShortUrlForm}">
+            <form th:action="@{/short-urls}" method="post" th:object="${createShortUrlForm}">
                 <div class="mb-3">
                     <label for="originalUrl" class="form-label">Original URL</label>
-                    <input type="text" class="form-control" id="originalUrl"
+                    <input type="url" class="form-control" id="originalUrl"
                            th:field="*{originalUrl}"
-                           placeholder="https://example.com/my-long-url">
-                    <div class="text-danger mt-1 small"
-                         th:if="${#fields.hasErrors('originalUrl')}"
+                           placeholder="https://example.com/my-super-long-url-to-shorten" required>
+                    <div class="text-danger mt-1" th:if="${#fields.hasErrors('originalUrl')}"
                          th:errors="*{originalUrl}"></div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Shorten URL</button>
+                <div sec:authorize="isAuthenticated()">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="expirationInDays" class="form-label">Expiration (days)</label>
+                            <input type="number" class="form-control" id="expirationInDays"
+                                   th:field="*{expirationInDays}" min="1" max="365">
+                            <div class="form-text">Leave empty for a permanent link.</div>
+                        </div>
+                    </div>
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="isPrivate" th:field="*{isPrivate}">
+                        <label class="form-check-label" for="isPrivate">Private link (only you can view in your dashboard)</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-magic" viewBox="0 0 16 16">
+                        <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0v1.829Zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707L14 2.707a.5.5 0 0 0 0-.707ZM7.293 4L8 3.293a.5.5 0 1 0-.707-.707L6.586 3.293a.5.5 0 0 0 0 .707l.707.707Zm-3.293 1a.5.5 0 0 0 0 .707l.707.707a.5.5 0 1 0 .707-.707L4.707 5a.5.5 0 0 0-.707 0ZM.843 10.5a.5.5 0 1 0 0-1H2.5a.5.5 0 0 0 0 1H.843ZM15.5 10a.5.5 0 0 0-.5.5v1.657a.5.5 0 0 0 1 0V10.5a.5.5 0 0 0-.5-.5ZM12.707 12l.707.707a.5.5 0 0 0 .707 0l.707-.707a.5.5 0 0 0 0-.707l-.707-.707a.5.5 0 0 0-.707 0L12 11.293a.5.5 0 0 0 0 .707Zm-9.192 1.414a.5.5 0 0 0 .707 0l.707-.707a.5.5 0 0 0 0-.707l-.707-.707a.5.5 0 0 0-.707.707l.707.707ZM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+                        <path d="M13.232 4.232a.5.5 0 0 1 0 .707l-2.829 2.829a.5.5 0 0 1-.707 0L9 7.061a.5.5 0 0 1 .707-.707l.707.707 2.829-2.829a.5.5 0 0 1 .707 0ZM3.5 13.5a.5.5 0 0 1 0-1H5a.5.5 0 0 1 0 1H3.5Z"/>
+                    </svg>
+                    <span>Shorten URL</span>
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Public URLs -->
-    <h2 class="fw-bold mb-3">Public Shortened URLs</h2>
-    <div th:if="${shortUrls.isEmpty()}" class="alert alert-info">
-        No public URLs have been created yet.
+    <h2 class="mb-4">Public Links</h2>
+
+    <div th:if="${shortUrls.data.isEmpty()}" class="alert alert-info p-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-info-circle-fill flex-shrink-0" viewBox="0 0 16 16">
+            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+        </svg>
+        <span>No public links have been created yet. Be the first!</span>
     </div>
-    <div th:unless="${shortUrls.isEmpty()}" class="table-responsive">
-        <table class="table align-middle">
+
+    <div th:unless="${shortUrls.data.isEmpty()}" class="table-responsive">
+        <table class="table table-hover align-middle">
             <thead>
             <tr>
                 <th>Short URL</th>
@@ -155,26 +247,27 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="url : ${shortUrls}">
+            <tr th:each="url : ${shortUrls.data}">
                 <td>
                     <a th:href="@{/s/{key}(key=${url.shortKey})}"
                        th:text="${baseUrl + '/s/' + url.shortKey}"
-                       target="_blank" class="fw-semibold text-decoration-none text-dark"></a>
+                       target="_blank" class="text-primary fw-semibold text-decoration-none"></a>
                 </td>
                 <td>
                     <a th:href="${url.originalUrl}"
                        th:text="${#strings.abbreviate(url.originalUrl, 50)}"
-                       target="_blank"
-                       class="text-decoration-none text-muted"></a>
+                       target="_blank" class="text-decoration-none text-dark"></a>
                 </td>
-                <td th:text="${url.createdBy != null ? url.createdBy.name : 'Guest'}"
-                    class="fw-medium"></td>
+                <td th:text="${url.createdBy != null ? url.createdBy.name : 'Guest'}"></td>
                 <td th:text="${#temporals.format(url.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
                 <td th:text="${url.expiresAt != null ? #temporals.format(url.expiresAt, 'yyyy-MM-dd HH:mm') : 'Never'}"></td>
             </tr>
             </tbody>
         </table>
+
+        <div th:insert="~{pagination}" class="p-3 bg-light"></div>
     </div>
+
 </div>
 </body>
 </html>

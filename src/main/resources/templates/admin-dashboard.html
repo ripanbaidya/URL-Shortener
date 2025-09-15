@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            background: #f5f7fb;
+            font-family: "Inter", system-ui, -apple-system, sans-serif;
+        }
+        .dashboard-header {
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .dashboard-header h2 {
+            margin: 0;
+            font-weight: 700;
+        }
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        table {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        thead {
+            background: #f1f5f9;
+        }
+        th {
+            font-weight: 600;
+            color: #444;
+        }
+        td a {
+            color: #2563eb;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        td a:hover {
+            text-decoration: underline;
+        }
+        .badge {
+            padding: 0.5em 0.75em;
+            font-size: 0.8rem;
+            border-radius: 0.5rem;
+        }
+        .alert {
+            border-radius: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content" class="container my-5">
+
+    <!-- Header -->
+    <div class="dashboard-header">
+        <h2>Admin Dashboard – All Shortened URLs</h2>
+        <p class="mb-0">Manage and monitor all generated links.</p>
+    </div>
+
+    <!-- Table / Empty State -->
+    <div th:if="${shortUrls.data.isEmpty()}" class="alert alert-info text-center">
+        No short URLs found.
+    </div>
+
+    <div th:unless="${shortUrls.data.isEmpty()}" class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th>Short URL</th>
+                        <th>Original URL</th>
+                        <th>Created By</th>
+                        <th>Created</th>
+                        <th>Expires</th>
+                        <th>Private</th>
+                        <th>Clicks</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="url : ${shortUrls.data}">
+                        <td>
+                            <a th:href="@{/s/{key}(key=${url.shortKey})}"
+                               th:text="${baseUrl + '/s/' + url.shortKey}"
+                               target="_blank"></a>
+                        </td>
+                        <td>
+                            <a th:href="${url.originalUrl}"
+                               th:text="${#strings.abbreviate(url.originalUrl, 50)}"
+                               target="_blank"></a>
+                        </td>
+                        <td th:text="${url.createdBy != null ? url.createdBy.name : 'Guest'}"></td>
+                        <td th:text="${#temporals.format(url.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${url.expiresAt != null ? #temporals.format(url.expiresAt, 'yyyy-MM-dd HH:mm') : 'Never'}"></td>
+                        <td>
+                            <span th:if="${url.private}" class="badge bg-secondary">Private</span>
+                            <span th:unless="${url.private}" class="badge bg-success">Public</span>
+                        </td>
+                        <td th:text="${url.clickCount}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="card-footer bg-white text-center">
+            <div th:insert="~{pagination}"></div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,44 +1,77 @@
 package org.astrobrains.urlshortener.service;
 
-import org.astrobrains.urlshortener.properties.ApplicationProperties;
-import org.astrobrains.urlshortener.dto.CreateShortUrlCmd;
-import org.astrobrains.urlshortener.dto.ShortUrlDto;
 import org.astrobrains.urlshortener.entities.ShortUrl;
 import org.astrobrains.urlshortener.mapper.EntityMapper;
+import org.astrobrains.urlshortener.properties.ApplicationProperties;
+import org.astrobrains.urlshortener.records.CreateShortUrlCmd;
+import org.astrobrains.urlshortener.records.PagedResult;
+import org.astrobrains.urlshortener.records.ShortUrlDto;
 import org.astrobrains.urlshortener.repository.ShortUrlRepository;
+import org.astrobrains.urlshortener.repository.UserRepository;
 import org.astrobrains.urlshortener.util.UrlExistenceValidator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.*;
 
 @Service
 @Transactional(readOnly = true)
 public class ShortUrlService {
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    private static final int SHORT_KEY_LENGTH = 6;
-    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final ShortUrlRepository shortUrlRepository;
     private final EntityMapper entityMapper;
     private final ApplicationProperties properties;
+    private final UserRepository userRepository;
 
     public ShortUrlService(ShortUrlRepository shortUrlRepository,
                            EntityMapper entityMapper,
-                           ApplicationProperties properties) {
+                           ApplicationProperties properties, UserRepository userRepository) {
         this.shortUrlRepository = shortUrlRepository;
         this.entityMapper = entityMapper;
         this.properties = properties;
+        this.userRepository = userRepository;
     }
 
-    public List<ShortUrlDto> findAllPublicShortUrls() {
-        return shortUrlRepository.findAllPublicShortUrls()
-                .stream().map(entityMapper::toShortUrlDto).toList();
+    public PagedResult<ShortUrlDto> findAllPublicShortUrls(int pageNo, int pageSize) {
+        Pageable pageable = getPageable(pageNo, pageSize);
+        Page<ShortUrlDto> shortUrlDtoPage = shortUrlRepository.findPublicShortUrls(pageable)
+                .map(entityMapper::toShortUrlDto);
+        return PagedResult.from(shortUrlDtoPage);
+    }
+
+    public PagedResult<ShortUrlDto> getUserShortUrls(Long userId, int page, int pageSize) {
+        Pageable pageable = getPageable(page, pageSize);
+        var shortUrlsPage = shortUrlRepository.findByCreatedById(userId, pageable)
+                .map(entityMapper::toShortUrlDto);
+        return PagedResult.from(shortUrlsPage);
+    }
+
+    @Transactional
+    public void deleteUserShortUrls(List<Long> ids, Long userId) {
+        if (ids != null && !ids.isEmpty() && userId != null) {
+            shortUrlRepository.deleteByIdInAndCreatedById(ids, userId);
+        }
+    }
+
+    public PagedResult<ShortUrlDto> findAllShortUrls(int page, int pageSize) {
+        Pageable pageable = getPageable(page, pageSize);
+        var shortUrlsPage =  shortUrlRepository.findPublicShortUrls(pageable).map(entityMapper::toShortUrlDto);
+        return PagedResult.from(shortUrlsPage);
+    }
+
+    private Pageable getPageable(int page, int size) {
+        page = page > 1 ? page - 1: 0;
+        return PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
     }
 
     @Transactional
@@ -53,13 +86,39 @@ public class ShortUrlService {
         var shortUrl = new ShortUrl();
         shortUrl.setOriginalUrl(cmd.originalUrl());
         shortUrl.setShortKey(shortKey);
-        shortUrl.setCreatedBy(null);
-        shortUrl.setIsPrivate(false);
+        if(cmd.userId() == null) {
+            shortUrl.setCreatedBy(null);
+            shortUrl.setIsPrivate(false);
+            shortUrl.setExpiresAt(Instant.now().plus(properties.defaultExpiryInDays(), DAYS));
+        } else {
+            shortUrl.setCreatedBy(userRepository.findById(cmd.userId()).orElseThrow());
+            shortUrl.setIsPrivate(cmd.isPrivate() != null && cmd.isPrivate());
+            shortUrl.setExpiresAt(cmd.expirationInDays() != null ? Instant.now().plus(cmd.expirationInDays(), DAYS) : null);
+        }
         shortUrl.setClickCount(0L);
-        shortUrl.setExpiresAt(Instant.now().plus(properties.defaultExpiryInDays(), DAYS));
         shortUrl.setCreatedAt(Instant.now());
         shortUrlRepository.save(shortUrl);
         return entityMapper.toShortUrlDto(shortUrl);
+    }
+
+    @Transactional
+    public Optional<ShortUrlDto> accessShortUrl(String shortKey, Long userId) {
+        Optional<ShortUrl> shortUrlOptional = shortUrlRepository.findByShortKey(shortKey);
+        if(shortUrlOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        ShortUrl shortUrl = shortUrlOptional.get();
+        if(shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(Instant.now())) {
+            return Optional.empty();
+        }
+        if(shortUrl.getIsPrivate() != null && shortUrl.getIsPrivate()
+                && shortUrl.getCreatedBy() != null
+                && !Objects.equals(shortUrl.getCreatedBy().getId(), userId)) {
+            return Optional.empty();
+        }
+        shortUrl.setClickCount(shortUrl.getClickCount()+1);
+        shortUrlRepository.save(shortUrl);
+        return shortUrlOptional.map(entityMapper::toShortUrlDto);
     }
 
     private String generateUniqueShortKey() {
@@ -70,26 +129,15 @@ public class ShortUrlService {
         return shortKey;
     }
 
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int SHORT_KEY_LENGTH = 6;
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     public static String generateRandomShortKey() {
         StringBuilder sb = new StringBuilder(SHORT_KEY_LENGTH);
         for (int i = 0; i < SHORT_KEY_LENGTH; i++) {
             sb.append(CHARACTERS.charAt(RANDOM.nextInt(CHARACTERS.length())));
         }
         return sb.toString();
-    }
-
-    @Transactional
-    public Optional<ShortUrlDto> accessShortUrl(String shortKey) {
-        Optional<ShortUrl> shortUrlOptional = shortUrlRepository.findByShortKey(shortKey);
-        if (shortUrlOptional.isEmpty()) {
-            return Optional.empty();
-        }
-        ShortUrl shortUrl = shortUrlOptional.get();
-        if (shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(Instant.now())) {
-            return Optional.empty();
-        }
-        shortUrl.setClickCount(shortUrl.getClickCount()+1);
-        shortUrlRepository.save(shortUrl);
-        return shortUrlOptional.map(entityMapper::toShortUrlDto);
     }
 }

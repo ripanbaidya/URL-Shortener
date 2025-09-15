@@ -1,0 +1,44 @@
+<nav th:if="${shortUrls.totalPages > 1}">
+    <ul class="pagination justify-content-center my-4">
+        <!-- First -->
+        <li class="page-item" th:classappend="${shortUrls.isFirst ? 'disabled' : ''}">
+            <a class="page-link rounded-pill px-3 shadow-sm"
+               th:href="@{/(page=1)}" aria-label="First">
+                « First
+            </a>
+        </li>
+
+        <!-- Previous -->
+        <li class="page-item" th:classappend="${shortUrls.isFirst ? 'disabled' : ''}">
+            <a class="page-link rounded-pill px-3 shadow-sm"
+               th:href="@{/(page=${shortUrls.pageNumber - 1})}" aria-label="Previous">
+                ‹ Prev
+            </a>
+        </li>
+
+        <!-- Current Info -->
+        <li class="page-item disabled">
+            <span class="page-link rounded-pill bg-light text-dark fw-semibold px-4 border-0">
+                <span th:text="${'Page ' + shortUrls.pageNumber + ' of ' + shortUrls.totalPages + ' • Total: ' + shortUrls.totalElements}">
+                    Page 1 of 10 • Total: 200
+                </span>
+            </span>
+        </li>
+
+        <!-- Next -->
+        <li class="page-item" th:classappend="${shortUrls.isLast ? 'disabled' : ''}">
+            <a class="page-link rounded-pill px-3 shadow-sm"
+               th:href="@{/(page=${shortUrls.pageNumber + 1})}" aria-label="Next">
+                Next ›
+            </a>
+        </li>
+
+        <!-- Last -->
+        <li class="page-item" th:classappend="${shortUrls.isLast ? 'disabled' : ''}">
+            <a class="page-link rounded-pill px-3 shadow-sm"
+               th:href="@{/(page=${shortUrls.totalPages})}" aria-label="Last">
+                Last »
+            </a>
+        </li>
+    </ul>
+</nav>

@@ -1,15 +1,15 @@
 # port configuration
 server:
-  port: 8000
-
-  # servlet path configuration
-  servlet:
-    context-path: /api/v1
+  port: 8080
 
 spring:
-  # application name
   application:
     name: Url-Shortner
+
+#  data:
+#    web:
+#      pageable:
+#        one-indexed-parameters: true
 
   # database configuration
   datasource:
@@ -29,6 +29,8 @@ spring:
       hibernate:
         format_sql: false
     database: postgresql
+
+   # security configuration
 #  security:
 #    user:
 #      name: rb
@@ -36,6 +38,6 @@ spring:
 #      roles:
 #        - ADMIN
 app:
-  baseUrl: http://localhost:8000
+  baseUrl: http://localhost:8080
   defaultExpiryInDays: 30
   validateOriginalUrl: true

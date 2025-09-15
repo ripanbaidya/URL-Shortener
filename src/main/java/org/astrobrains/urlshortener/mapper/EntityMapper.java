@@ -1,7 +1,7 @@
 package org.astrobrains.urlshortener.mapper;
 
-import org.astrobrains.urlshortener.dto.ShortUrlDto;
-import org.astrobrains.urlshortener.dto.UserDto;
+import org.astrobrains.urlshortener.records.ShortUrlDto;
+import org.astrobrains.urlshortener.records.UserDto;
 import org.astrobrains.urlshortener.entities.ShortUrl;
 import org.astrobrains.urlshortener.entities.User;
 import org.springframework.stereotype.Component;

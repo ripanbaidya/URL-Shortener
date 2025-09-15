@@ -1,4 +1,4 @@
-package org.astrobrains.urlshortener.dto;
+package org.astrobrains.urlshortener.records;
 
 import java.io.Serializable;
 import java.time.Instant;
