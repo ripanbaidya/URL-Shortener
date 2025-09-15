@@ -12,12 +12,12 @@ public record PagedResult<T>(
         boolean isFirst,
         boolean isLast,
         boolean hasNext,
-        boolean hasPrevious) {
-
+        boolean hasPrevious
+) {
     public static <T> PagedResult<T> from(Page<T> page) {
         return new PagedResult<>(
                 page.getContent(),
-                page.getNumber() + 1, //to show 1-based page numbering
+                page.getNumber() + 1, // to show 1-based page numbering
                 page.getTotalPages(),
                 page.getTotalElements(),
                 page.isFirst(),

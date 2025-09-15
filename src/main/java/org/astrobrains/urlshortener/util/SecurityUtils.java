@@ -1,6 +1,6 @@
 package org.astrobrains.urlshortener.util;
 
-import org.astrobrains.urlshortener.entities.User;
+import org.astrobrains.urlshortener.model.User;
 import org.astrobrains.urlshortener.repository.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

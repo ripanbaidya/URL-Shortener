@@ -1,6 +1,6 @@
 package org.astrobrains.urlshortener.service;
 
-import org.astrobrains.urlshortener.entities.User;
+import org.astrobrains.urlshortener.model.User;
 import org.astrobrains.urlshortener.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,8 +22,7 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(username)
-                .orElseThrow(
-                        () -> new UsernameNotFoundException("User not found with email: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

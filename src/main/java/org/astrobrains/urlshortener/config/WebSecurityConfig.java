@@ -19,11 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
@@ -32,8 +27,8 @@ public class WebSecurityConfig {
                     "/error", "/webjars/**", "/css/**", "/js/**", "/images/**",
                     "/", "/short-urls", "/s/**", "/register", "/login"
                 ).permitAll()
-                // .requestMatchers("/my-urls").authenticated()
-                // .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/my-urls").authenticated()
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -48,6 +43,11 @@ public class WebSecurityConfig {
             );
 
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

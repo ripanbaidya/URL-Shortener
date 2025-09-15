@@ -1,4 +1,4 @@
-# port configuration
+# port config
 server:
   port: 8080
 
@@ -6,22 +6,17 @@ spring:
   application:
     name: Url-Shortner
 
-#  data:
-#    web:
-#      pageable:
-#        one-indexed-parameters: true
-
-  # database configuration
+  # database config
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
-  # jpa configuration
+  # jpa config
   jpa:
-#    hibernate:
-#      ddl-auto: create
+    hibernate:
+      ddl-auto: validate
     show-sql: true
     # default value is true, make sure in production make it false or else it will create performance issue.
     open-in-view: false
@@ -30,13 +25,12 @@ spring:
         format_sql: false
     database: postgresql
 
-   # security configuration
+   # security config
 #  security:
 #    user:
-#      name: rb
-#      password: rb
-#      roles:
-#        - ADMIN
+#      name: user
+#      password: pass
+#      roles: ADMIN, USER
 app:
   baseUrl: http://localhost:8080
   defaultExpiryInDays: 30

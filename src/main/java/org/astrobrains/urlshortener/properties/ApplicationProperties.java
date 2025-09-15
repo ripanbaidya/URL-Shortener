@@ -11,10 +11,10 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public record ApplicationProperties(
         @NotBlank
-        @DefaultValue("http://localhost:8000")
+        @DefaultValue("http://localhost:8080")
         String baseUrl,
 
-        @Min(1) @Max(180)
+        @Min(1) @Max(365)
         @DefaultValue("30")
         int defaultExpiryInDays,
 

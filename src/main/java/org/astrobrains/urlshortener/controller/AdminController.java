@@ -2,7 +2,7 @@ package org.astrobrains.urlshortener.controller;
 
 import org.astrobrains.urlshortener.properties.ApplicationProperties;
 import org.astrobrains.urlshortener.records.PagedResult;
-import org.astrobrains.urlshortener.records.ShortUrlDto;
+import org.astrobrains.urlshortener.dto.ShortUrlDto;
 import org.astrobrains.urlshortener.service.ShortUrlService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
+
     private final ShortUrlService shortUrlService;
     private final ApplicationProperties properties;
 
@@ -26,7 +27,8 @@ public class AdminController {
     @GetMapping("/dashboard")
     public String dashboard(
             @RequestParam(defaultValue = "1") int page,
-            Model model) {
+            Model model
+    ) {
         PagedResult<ShortUrlDto> allUrls = shortUrlService.findAllPublicShortUrls(page, properties.pageSize());
         model.addAttribute("shortUrls", allUrls);
         model.addAttribute("baseUrl", properties.baseUrl());

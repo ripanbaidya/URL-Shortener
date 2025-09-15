@@ -1,4 +1,4 @@
-package org.astrobrains.urlshortener.model;
+package org.astrobrains.urlshortener.enums;
 
 public enum Role {
     ROLE_USER,

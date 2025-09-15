@@ -5,5 +5,5 @@ public record CreateShortUrlCmd(
         Boolean isPrivate,
         Integer expirationInDays,
         Long userId
-        ) {
-}
+)
+{ }

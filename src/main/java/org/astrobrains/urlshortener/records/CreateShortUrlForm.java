@@ -12,5 +12,5 @@ public record CreateShortUrlForm(
 
         @Min(1) @Max(365)
         Integer expirationInDays
-        ) {
-}
+)
+{ }

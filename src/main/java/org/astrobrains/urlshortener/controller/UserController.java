@@ -1,7 +1,7 @@
 package org.astrobrains.urlshortener.controller;
 
 import jakarta.validation.Valid;
-import org.astrobrains.urlshortener.model.Role;
+import org.astrobrains.urlshortener.enums.Role;
 import org.astrobrains.urlshortener.records.CreateUserCmd;
 import org.astrobrains.urlshortener.records.RegisterUserRequest;
 import org.astrobrains.urlshortener.service.UserService;
@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class UserController {
+
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -23,7 +24,7 @@ public class UserController {
 
     @GetMapping("/register")
     public String registerForm(Model model) {
-        model.addAttribute("user", new RegisterUserRequest("","",""));
+        model.addAttribute("user", new RegisterUserRequest("", "", ""));
         return "register";
     }
 
@@ -31,7 +32,8 @@ public class UserController {
     public String registerUser(
             @Valid @ModelAttribute("user") RegisterUserRequest registerRequest,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes
+    ) {
         if (bindingResult.hasErrors()) {
             return "register";
         }
@@ -39,17 +41,25 @@ public class UserController {
         try {
             var cmd = new CreateUserCmd(
                     registerRequest.email(),
-                    registerRequest
-                            .password(),
+                    registerRequest.password(),
                     registerRequest.name(),
                     Role.ROLE_USER
             );
 
             userService.createUser(cmd);
-            redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please login.");
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Registration successful! Please login."
+            );
+
             return "redirect:/login";
+
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Registration failed: " + e.getMessage());
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Registration failed: " + e.getMessage()
+            );
             return "redirect:/register";
         }
     }

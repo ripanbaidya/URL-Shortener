@@ -28,6 +28,20 @@ public enum BusinessErrorCodes {
     URL_SHORT_KEY_TOO_LONG(112, HttpStatus.BAD_REQUEST, "URL short key too long"),
     URL_SHORT_KEY_TOO_SHORT(113, HttpStatus.BAD_REQUEST, "URL short key too short"),
 
+    // user related: 200 - 299
+    USER_NOT_FOUND(200, HttpStatus.NOT_FOUND, "User not found"),
+    USER_ALREADY_EXISTS(201, HttpStatus.CONFLICT, "User already exists"),
+    USER_INVALID(202, HttpStatus.BAD_REQUEST, "User invalid"),
+    USER_PRIVATE(203, HttpStatus.FORBIDDEN, "User private"),
+    USER_PUBLIC(204, HttpStatus.OK, "User public"),
+    USER_SHORT_KEY_INVALID(205, HttpStatus.BAD_REQUEST, "User short key invalid"),
+    USER_SHORT_KEY_LENGTH_INVALID(206, HttpStatus.BAD_REQUEST, "User short key length invalid"),
+    USER_SHORT_KEY_LENGTH_TOO_SHORT(207, HttpStatus.BAD_REQUEST, "User short key length too short"),
+    USER_SHORT_KEY_LENGTH_TOO_LONG(208, HttpStatus.BAD_REQUEST, "User short key length too long"),
+    USER_SHORT_KEY_ALREADY_EXISTS(209, HttpStatus.CONFLICT, "User short key already exists"),
+    USER_SHORT_KEY_NOT_FOUND(210, HttpStatus.NOT_FOUND, "User short key not found"),
+    USER_SHORT_KEY_TOO_LONG(211, HttpStatus.BAD_REQUEST, "User short key too long"),
+    USER_SHORT_KEY_TOO_SHORT(212, HttpStatus.BAD_REQUEST, "User short key too short"),
     ;
 
     @Getter

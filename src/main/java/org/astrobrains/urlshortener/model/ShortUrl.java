@@ -1,10 +1,7 @@
-package org.astrobrains.urlshortener.entities;
+package org.astrobrains.urlshortener.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
@@ -12,6 +9,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "short_urls")
 @Getter @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShortUrl {

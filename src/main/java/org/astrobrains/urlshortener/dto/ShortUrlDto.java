@@ -1,10 +1,12 @@
-package org.astrobrains.urlshortener.records;
+package org.astrobrains.urlshortener.dto;
+
+import org.astrobrains.urlshortener.model.ShortUrl;
 
 import java.io.Serializable;
 import java.time.Instant;
 
 /**
- * DTO for {@link org.astrobrains.urlshortener.entities.ShortUrl}
+ * DTO for {@link ShortUrl}
  */
 public record ShortUrlDto(Long id, String shortKey, String originalUrl,
                           Boolean isPrivate, Instant expiresAt,

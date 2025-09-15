@@ -1,14 +1,17 @@
 package org.astrobrains.urlshortener.mapper;
 
-import org.astrobrains.urlshortener.records.ShortUrlDto;
-import org.astrobrains.urlshortener.records.UserDto;
-import org.astrobrains.urlshortener.entities.ShortUrl;
-import org.astrobrains.urlshortener.entities.User;
+import org.astrobrains.urlshortener.dto.ShortUrlDto;
+import org.astrobrains.urlshortener.dto.UserDto;
+import org.astrobrains.urlshortener.model.ShortUrl;
+import org.astrobrains.urlshortener.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EntityMapper {
 
+    /**
+     * Converts a ShortUrl Object to ShortUrlDto
+     */
     public ShortUrlDto toShortUrlDto(ShortUrl shortUrl) {
         UserDto userDto = null;
         if (shortUrl.getCreatedBy() != null) {
@@ -27,6 +30,9 @@ public class EntityMapper {
         );
     }
 
+    /**
+     * Converts a User Object to UserDto
+     */
     public UserDto toUserDto(User user) {
         return new UserDto(user.getId(), user.getName());
     }
