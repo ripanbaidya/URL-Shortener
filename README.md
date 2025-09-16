@@ -1,8 +1,9 @@
 ## URL Shortner (Linkify)
 
+
 A **simple URL Shortener application** built with Spring Boot and Thymeleaf.
 Users can shorten long URLs and manage them through a simple web interface.
----
+
 
 ## ✨ Features
 - **User Authentication** – Register and log in to manage your own URLs.
