@@ -88,5 +88,3 @@ This project is licensed under the Apache-2.0 license.
 ### ☝️One Request
 
 If you found this repository helpful, please consider giving it a star 🌟. It's free, and it will motivate me to create more such content.
-
----
